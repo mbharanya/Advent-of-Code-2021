@@ -26,17 +26,24 @@ object Day1 extends App {
   def getAmountIncreasedSliding(measurements: List[Int]) = measurements
     .zipWithIndex
     .map((m, i) => {
-      val previousSlidingWindow = measurements.lift(i - 1).getOrElse(0) +
-        measurements.lift(i ).getOrElse(0) +
-        measurements.lift(i + 1).getOrElse(0)
+      val previousSlidingWindow = for {
+        first <- measurements.lift(i - 1)
+        second <- measurements.lift(i)
+        third <- measurements.lift(i + 1)
+      } yield first + second + third
 
-      val nextSlidingWindow = measurements.lift(i).getOrElse(0) +
-        measurements.lift(i + 1).getOrElse(0) +
-        measurements.lift(i + 2).getOrElse(0)
+      val nextSlidingWindow = for {
+        first <- measurements.lift(i)
+        second <- measurements.lift(i + 1)
+        third <- measurements.lift(i + 2)
+      } yield first + second + third
 
-      if (previousSlidingWindow != 0)
-        nextSlidingWindow > previousSlidingWindow
-      else false
+      val isLarger = for {
+        next <- nextSlidingWindow
+        previous <- previousSlidingWindow
+      } yield next > previous
+
+      isLarger.getOrElse(false)
     })
     .filter(_ == true)
     .length
@@ -52,7 +59,6 @@ object Day1 extends App {
 
   println(getAmountIncreasedSliding(testMeasurements))
   println(getAmountIncreasedSliding(measurementFromFile))
-
 
 
 }
