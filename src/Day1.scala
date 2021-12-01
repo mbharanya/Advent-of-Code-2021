@@ -60,5 +60,17 @@ object Day1 extends App {
   println(getAmountIncreasedSliding(testMeasurements))
   println(getAmountIncreasedSliding(measurementFromFile))
 
+  println("Golfed:")
+  println(
+    measurementFromFile.sliding(2, 1)
+      .count(l => l(0) < l(1))
+  )
+
+  println(
+    measurementFromFile.sliding(3, 1)
+      .map(_.sum)
+      .sliding(2,1)
+      .count(l => l(0) < l(1))
+  )
 
 }
