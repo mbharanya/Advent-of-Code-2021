@@ -1,19 +1,9 @@
-import Day1.testMeasurements
+package ch.bharanya
 
 import scala.io.Source
 
 object Day1 extends App {
-  val testInput: String =
-    """199
-      |200
-      |208
-      |210
-      |200
-      |207
-      |240
-      |269
-      |260
-      |263""".stripMargin
+
 
 
   def getAmountIncreased(measurements: List[Int]) = measurements
@@ -48,8 +38,6 @@ object Day1 extends App {
     .filter(_ == true)
     .length
 
-  val testMeasurements = testInput.split("\n").map(_.toInt).toList
-  println(getAmountIncreased(testMeasurements))
 
 
   val filename = "res/day1_1.txt"
@@ -57,7 +45,6 @@ object Day1 extends App {
 
   println(getAmountIncreased(measurementFromFile))
 
-  println(getAmountIncreasedSliding(testMeasurements))
   println(getAmountIncreasedSliding(measurementFromFile))
 
   println("Golfed:")

@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/advent-of-code-2021.iml" filepath="$PROJECT_DIR$/advent-of-code-2021.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/advent-of-code-sbt.iml" filepath="$PROJECT_DIR$/.idea/modules/advent-of-code-sbt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/advent-of-code-sbt-build.iml" filepath="$PROJECT_DIR$/.idea/modules/advent-of-code-sbt-build.iml" />
     </modules>
   </component>
 </project>
