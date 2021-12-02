@@ -2,46 +2,49 @@ package ch.bharanya
 
 import scala.io.Source
 
-object Day2 extends App{
+object Day2 extends App {
 
   def getMultipliedPositionDepth(instructions: List[String]) = {
-    var horizontalPosition = 0
-    var depth = 0
-    var aim = 0
-    instructions.map(instruction => {
-      instruction.split(" ") match {
-        case Array(direction, amount) => direction match{
-          case "forward" => horizontalPosition = horizontalPosition + amount.toInt
-          case "down" => depth = depth + amount.toInt
-          case "up" => depth = depth - amount.toInt
-        }
+    def recursive(i: Int, horizontalPosition: Int, depth: Int): (Int, Int) = {
+      instructions.lift(i) match {
+        case Some(instruction) =>
+          instruction.split(" ") match {
+            case Array(direction, amount) => direction match {
+              case "forward" => recursive(i + 1, horizontalPosition + amount.toInt, depth)
+              case "down" => recursive(i + 1, horizontalPosition, depth + amount.toInt)
+              case "up" => recursive(i + 1, horizontalPosition, depth - amount.toInt)
+            }
+          }
+        case None => (horizontalPosition, depth)
       }
-    })
+    }
+
+    val (horizontalPosition, depth) = recursive(0, 0, 0)
+
     horizontalPosition * depth
   }
 
   def getWithAim(instructions: List[String]) = {
-    var horizontalPosition = 0
-    var depth = 0
-    var aim = 0
-    instructions.map(instruction => {
-      instruction.split(" ") match {
-        case Array(direction, amount) => direction match{
-          case "forward" => {
-            horizontalPosition = (horizontalPosition + amount.toInt)
-            depth = depth + (amount.toInt * aim)
+
+    def recursive(i: Int, horizontalPosition: Int, depth: Int, aim: Int): (Int, Int) = {
+      instructions.lift(i) match {
+        case Some(instruction) =>
+          instruction.split(" ") match {
+            case Array(direction, amount) => direction match {
+              case "forward" => recursive(i + 1, horizontalPosition + amount.toInt, depth + (amount.toInt * aim), aim)
+              case "down" => recursive(i + 1, horizontalPosition, depth, aim + amount.toInt )
+              case "up" => recursive(i + 1, horizontalPosition, depth, aim - amount.toInt )
+            }
           }
-          case "down" => {
-            aim = aim + amount.toInt
-          }
-          case "up" =>  {
-            aim = aim - amount.toInt
-          }
-        }
+        case None => (horizontalPosition, depth)
       }
-    })
+    }
+
+    val (horizontalPosition, depth) = recursive(0, 0, 0, 0)
+
     horizontalPosition * depth
   }
+
   val filename = "res/day2.txt"
 
   val data = Source.fromFile(filename).getLines.toList
