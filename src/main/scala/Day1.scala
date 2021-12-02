@@ -40,7 +40,7 @@ object Day1 extends App {
 
 
 
-  val filename = "res/day1_1.txt"
+  val filename = "res/day1.txt"
   val measurementFromFile = Source.fromFile(filename).getLines.map(_.toInt).toList
 
   println(getAmountIncreased(measurementFromFile))
