@@ -37,4 +37,10 @@ class Day3Test extends AnyFlatSpec with should.Matchers {
     Day3.getPart1(TestData.testData)  should be(198)
   }
 
+  "Day 3 Part 2" should "calculate oxygen generator rating" in {
+    Day3.getOxygenGenerator(TestData.testData, 0)  should be(23)
+    Day3.getCO2Generator(TestData.testData, 0)  should be(10)
+
+  }
+
 }
