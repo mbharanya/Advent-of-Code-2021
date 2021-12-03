@@ -9,23 +9,32 @@ import scala.collection.mutable.Stack
 class Day3Test extends AnyFlatSpec with should.Matchers {
   object TestData{
     val testInput: String =
-      """forward 5
-        |down 5
-        |forward 8
-        |up 3
-        |down 8
-        |forward 2""".stripMargin
+      """00100
+        |11110
+        |10110
+        |10111
+        |10101
+        |01111
+        |00111
+        |11100
+        |10000
+        |11001
+        |00010
+        |01010""".stripMargin
 
     val testData = testInput.split("\n").toList
   }
 
 
-  "Day 3 Part 1" should "calculate test data" in {
-    Day2.getMultipliedPositionDepth(TestData.testData) should be(150)
+  "Day 3 Part 1" should "calculate getMostCommonBits" in {
+    Day3.getMostCommonBits(TestData.testData) should be(22)
+  }
+  "Day 3 Part 1" should "calculate getLeastCommonBits" in {
+    Day3.getLeastCommonBits(TestData.testData) should be(9)
   }
 
-  "Day 3 Part 2" should "calculate test data" in {
-    Day2.getWithAim(TestData.testData) should be(900)
+  "Day 3 Part 1" should "calculate result" in {
+    Day3.getPart1(TestData.testData)  should be(198)
   }
 
 }
