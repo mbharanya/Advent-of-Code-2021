@@ -27,7 +27,6 @@ object Day6 extends App {
     }
   }
 
-//  def tickFast()
 
   def part1(): Unit ={
     val state = Util.getSplitLine(6, ",").map(_.toLong)
@@ -41,6 +40,6 @@ object Day6 extends App {
     println(res.length)
   }
 
-  //  part1()
-//  part2()
+//    part1()
+  part2()
 }

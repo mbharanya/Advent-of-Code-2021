@@ -1,5 +1,7 @@
 package ch.bharanya
 
+import scala.io.Source
+
 object Day5 extends App {
   case class Position(x: Int, y: Int)
 
@@ -45,7 +47,7 @@ object Day5 extends App {
     }).mkString("")
   }
 
-  def part1(input: List[String]): Matrix = {
+  def getMatrix(input: List[String]): Matrix = {
     val Pattern = "([0-9]+),([0-9]+) -> ([0-9]+),([0-9]+)".r
     new Matrix(input.map { line =>
       line match {
@@ -55,13 +57,39 @@ object Day5 extends App {
     })
   }
 
+  def part1(input: List[String]) ={
+    val filter: Day5.Line => Boolean = l => l.from.x == l.to.x || l.from.y == l.to.y
+
+    val matrix = getMatrix(Util.getFileLines(5))
+    val intersections = matrix.getIntersections(2, filter)
+    println(intersections.keys.size)
+  }
+
+  def part2(input: List[String]) ={
+    val matrix2 = getMatrix(Util.getFileLines(5))
+    val intersections2 = matrix2.getIntersections(2, _ => true)
+    println(intersections2.keys.size)
+  }
+
+
+
+
+//  val matrixBig = getMatrix(Source.fromFile("res/day5_big.txt").getLines.toList)
+//  val intersections = matrixBig.getIntersections(2, _ => true)
+//  println(intersections.keys.size)
+//
+
   val filter: Day5.Line => Boolean = l => l.from.x == l.to.x || l.from.y == l.to.y
-  val matrix = part1(Util.getFileLines(5))
-  val intersections = matrix.getIntersections(2, filter)
-  println(intersections.keys.size)
 
-  val matrix2 = part1(Util.getFileLines(5))
-  val intersections2 = matrix2.getIntersections(2, _ => true)
-  println(intersections2.keys.size)
+  val t1 = System.nanoTime
 
+
+
+  val matrixBig = getMatrix(Source.fromFile("res/5-50000-10000.in").getLines.toList)
+  println(matrixBig.getIntersections(2, filter).keys.size)
+  println(matrixBig.getIntersections(2, _ => true).keys.size)
+
+  val duration = (System.nanoTime - t1) / 1e9d
+
+  println(duration)
 }

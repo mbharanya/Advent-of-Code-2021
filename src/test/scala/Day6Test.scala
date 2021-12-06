@@ -19,9 +19,9 @@ class Day6Test extends AnyFlatSpec with should.Matchers {
     Day6.tick(TestData.testData,1, 18) should have length 26
     Day6.tick(TestData.testData,1, 80) should have length 5934
   }
-//
-//  "Day 6 Part 2" should "calculate State" in {
-//    Day6.tick(TestData.testData,1, 256) should have length 26984457539
-//  }
+
+  "Day 6 Part 2" should "calculate State" in {
+    Day6.tick(TestData.testData,1, 256) should have length 26984457539
+  }
 
 }

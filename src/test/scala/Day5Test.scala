@@ -39,7 +39,7 @@ class Day5Test extends AnyFlatSpec with should.Matchers {
   }
 
   "Day 5 Part 1" should "calculate overlaps" in {
-    val matrix = Day5.part1(TestData.testData)
+    val matrix = Day5.getMatrix(TestData.testData)
 
     println(matrix)
     val filter: Day5.Line => Boolean = l => l.from.x == l.to.x || l.from.y == l.to.y
@@ -49,7 +49,7 @@ class Day5Test extends AnyFlatSpec with should.Matchers {
 
 
   "Day 5 Part 2" should "calculate overlaps" in {
-    val matrix = Day5.part1(TestData.testData)
+    val matrix = Day5.getMatrix(TestData.testData)
 
     println(matrix)
     val filter: Day5.Line => Boolean = _ => true
