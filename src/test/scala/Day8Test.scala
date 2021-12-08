@@ -33,4 +33,14 @@ class Day8Test extends AnyFlatSpec with should.Matchers {
     sum should be(26)
   }
 
+
+  "Day 8 Part 2" should "get digit" in {
+    TestData.testData.map(line => {
+      val input = line.split(" \\| ")(0)
+      val output = line.split(" \\| ")(1)
+      val res = Day8.getDigit(input.split(" ").toList, output.split(" ").toList)
+      res
+    }).sum should be(61229)
+  }
+
 }
