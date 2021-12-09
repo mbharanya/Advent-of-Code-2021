@@ -4,6 +4,7 @@ import org.scalatest.*
 import org.scalatest.flatspec.*
 import org.scalatest.matchers.*
 
+import scala.collection.immutable.Queue
 import scala.collection.mutable.Stack
 
 class Day9Test extends AnyFlatSpec with should.Matchers {
@@ -25,7 +26,8 @@ class Day9Test extends AnyFlatSpec with should.Matchers {
 
 
   "Day 9 Part 1" should "get lowest points" in {
-    val lowestPoints = Day9.getLowestPoints(new Day9.Maze(TestData.map.toMap))
+    val maze = new Day9.Maze(TestData.map.toMap)
+    val lowestPoints = maze.getLowestPoints()
     // lowestPoints.map(_._2) should contain allOf(5,0,5,1)
     lowestPoints.map(_._2) should have size 4
   }
@@ -35,11 +37,16 @@ class Day9Test extends AnyFlatSpec with should.Matchers {
 
   "Day 9 Part 2" should "get basins" in {
     val maze = new Day9.Maze(TestData.map.toMap)
-    val lowest = Day9.getLowestPoints(maze)
+    val lowest = maze.getLowestPoints()
 
-    val basinSizes = lowest.map(_ match { case ((x,y), _) => {
-      maze.getBasinSizeofPoint(x,y, LazyList()).toSet.size
-    } } ).toList.sorted.reverse.slice(0,3)
+    val test = maze.getBasin2(Queue.from(List((0,1))), List((0,1)))
+    test should have length 3
+
+    val basins = lowest.map(_._1).map((x,y) => maze.getBasin2(Queue.from(List((x,y))), List((x,y))))
+
+    val basinSizes = basins.map(_.size).toList.sorted.reverse.slice(0,3)
+//    basinSizes
+////     lowest.map(_._1).map(maze.getBasin2(Queue.from(_), Nil)).sorted.reverse.slice(0,3)
     basinSizes.product should be(1134)
   }
 

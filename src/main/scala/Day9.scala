@@ -1,5 +1,8 @@
 package ch.bharanya
 
+import scala.annotation.tailrec
+import scala.collection.immutable.Queue
+
 object Day9 extends App {
   type CoordMap = Map[(Int, Int), Int]
 
@@ -13,64 +16,41 @@ object Day9 extends App {
       List(up, down, left, right)
     }
 
-    def getBasinSizeofPoint(x: Int, y: Int, alreadyCounted: LazyList[(Int, Int)]): LazyList[(Int, Int)] = {
-      val newCounted = (x, y) #:: alreadyCounted
+    def getLowestPoints(): CoordMap = {
+      map.filter {
+        _ match {
+          case ((x, y), value) => {
+            val adjacents = getAdjacent(x, y)
+            value < adjacents.flatten.min
+          }
+        }
+      }
+    }
 
-      if (!map.lift(x, y).exists(_ == 9) && !alreadyCounted.contains((x, y))) {
-        val up = (x, y - 1) -> map.lift(x, y - 1)
-        val down = (x, y + 1) -> map.lift(x, y + 1)
-        val left = (x - 1, y) -> map.lift(x - 1, y)
-        val right = (x + 1, y) -> map.lift(x + 1, y)
+    def getBasin2(queue: Queue[(Int, Int)], alreadyCounted: List[(Int, Int)]): List[(Int, Int)] = {
+      val ((x: Int, y: Int), newQueue) = queue.dequeue
 
+      val up = (x, y - 1) -> map.lift(x, y - 1)
+      val down = (x, y + 1) -> map.lift(x, y + 1)
+      val left = (x - 1, y) -> map.lift(x - 1, y)
+      val right = (x + 1, y) -> map.lift(x + 1, y)
 
-        val validOthers = LazyList(up, down, left, right).filter(_ match {
-          case (newX, newY) -> value => value.exists(_ < 9)
-        }).map(_._1)
+      val newValuesToQueue = List(up, down, left, right).filter(_ match {
+        case (newX, newY) -> value => value.exists(_ < 9) && !alreadyCounted.contains((newX, newY))
+      }).map(_._1)
 
-        bfs(validOthers, {
-          case (newX, newY) => getBasinSizeofPoint(newX, newY, newCounted)
-        })
-//
-//        val upElements = getBasinSizeofPoint(up._1._1, up._1._2, newCounted)
-//        val downElements = getBasinSizeofPoint(down._1._1, down._1._2, upElements)
-//        val leftElements = getBasinSizeofPoint(left._1._1, left._1._2, downElements)
-//        val rightElements = getBasinSizeofPoint(right._1._1, right._1._2, leftElements)
-//
-//
-//        rightElements
+      val newNewQueue = newQueue.enqueueAll(newValuesToQueue)
 
-
-        //        validOthers.flatMap(_ match {
-        //          case (newX, newY) -> value => if (!newCounted.contains(newX, newY)) getBasinSizeofPoint(newX, newY, newCounted) else newCounted
-        //        }).toSet.toList
-
-
+      if (!newNewQueue.isEmpty) {
+        getBasin2(newNewQueue, newValuesToQueue ::: alreadyCounted)
       } else {
-        //        println(s"basin size of ${(x, y)}->${map.lift(x, y)} = ${alreadyCounted.size}")
         alreadyCounted
       }
     }
   }
 
-  def bfs[T](nodes: LazyList[T], f: T => LazyList[T]): LazyList[T] = {
-    if (nodes.isEmpty) nodes
-    else nodes.head #:: bfs(nodes.tail lazyAppendedAll f(nodes.head), f)
-  }
 
-
-
-  def getLowestPoints(maze: Maze): CoordMap = {
-    maze.map.filter {
-      _ match {
-        case ((x, y), value) => {
-          val adjacents = maze.getAdjacent(x, y)
-          value < adjacents.flatten.min
-        }
-      }
-    }
-  }
-
-  def getRiskLevel(maze: Maze) = getLowestPoints(maze).map(_ match { case ((x, y), value) => 1 + value }).sum
+  def getRiskLevel(maze: Maze) = maze.getLowestPoints().map(_ match { case ((x, y), value) => 1 + value }).sum
 
   def part1() = {
     val lines = Util.getFileLines(9)
@@ -91,16 +71,19 @@ object Day9 extends App {
 
     val maze = new Maze(map.toMap)
 
-    val lowest = getLowestPoints(maze)
-    val basinSizes = lowest.map(_ match { case ((x, y), _) => {
-      println(s"testing  lowest ${(x, y)}")
-      maze.getBasinSizeofPoint(x, y, LazyList()).toSet.size
+    val lowest = maze.getLowestPoints()
+    val basins = lowest.keys.toList.map {
+      (x, y) =>
+        maze.getBasin2(
+          Queue.from(List((x, y))), List((x, y))
+        )
     }
-    }).toList.sorted.reverse.slice(0, 3)
 
+    val sorted = basins.map(_.size).toList.sorted
+    val basinSizes = basins.map(_.size).toList.sorted.reverse.slice(0, 3)
     println(basinSizes.product)
   }
 
   part1()
-  //  part2()
+  part2()
 }
