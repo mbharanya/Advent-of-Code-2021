@@ -13,8 +13,8 @@ object Day9 extends App {
       List(up, down, left, right)
     }
 
-    def getBasinSizeofPoint(x: Int, y: Int, alreadyCounted: List[(Int, Int)]): List[(Int, Int)] = {
-      val newCounted: List[(Int, Int)] = (x, y) :: alreadyCounted
+    def getBasinSizeofPoint(x: Int, y: Int, alreadyCounted: LazyList[(Int, Int)]): LazyList[(Int, Int)] = {
+      val newCounted = (x, y) #:: alreadyCounted
 
       if (!map.lift(x, y).exists(_ == 9) && !alreadyCounted.contains((x, y))) {
         val up = (x, y - 1) -> map.lift(x, y - 1)
@@ -23,17 +23,23 @@ object Day9 extends App {
         val right = (x + 1, y) -> map.lift(x + 1, y)
 
 
-//        val validOthers = List(up, down, left, right).filter(_ match {
-//          case (newX, newY) -> value => value.exists(_ < 9)
-//        })
+        val validOthers = LazyList(up, down, left, right).filter(_ match {
+          case (newX, newY) -> value => value.exists(_ < 9)
+        }).map(_._1)
 
-        val upElements = getBasinSizeofPoint(up._1._1, up._1._2, newCounted)
-        val downElements = getBasinSizeofPoint(down._1._1, down._1._2, upElements)
-        val leftElements = getBasinSizeofPoint(left._1._1, left._1._2, downElements)
-        val rightElements = getBasinSizeofPoint(right._1._1, right._1._2, leftElements)
+        bfs(validOthers, {
+          case (newX, newY) => getBasinSizeofPoint(newX, newY, newCounted)
+        })
+//
+//        val upElements = getBasinSizeofPoint(up._1._1, up._1._2, newCounted)
+//        val downElements = getBasinSizeofPoint(down._1._1, down._1._2, upElements)
+//        val leftElements = getBasinSizeofPoint(left._1._1, left._1._2, downElements)
+//        val rightElements = getBasinSizeofPoint(right._1._1, right._1._2, leftElements)
+//
+//
+//        rightElements
 
 
-        rightElements
         //        validOthers.flatMap(_ match {
         //          case (newX, newY) -> value => if (!newCounted.contains(newX, newY)) getBasinSizeofPoint(newX, newY, newCounted) else newCounted
         //        }).toSet.toList
@@ -45,6 +51,13 @@ object Day9 extends App {
       }
     }
   }
+
+  def bfs[T](nodes: LazyList[T], f: T => LazyList[T]): LazyList[T] = {
+    if (nodes.isEmpty) nodes
+    else nodes.head #:: bfs(nodes.tail lazyAppendedAll f(nodes.head), f)
+  }
+
+
 
   def getLowestPoints(maze: Maze): CoordMap = {
     maze.map.filter {
@@ -81,7 +94,7 @@ object Day9 extends App {
     val lowest = getLowestPoints(maze)
     val basinSizes = lowest.map(_ match { case ((x, y), _) => {
       println(s"testing  lowest ${(x, y)}")
-      maze.getBasinSizeofPoint(x, y, Nil).toSet.size
+      maze.getBasinSizeofPoint(x, y, LazyList()).toSet.size
     }
     }).toList.sorted.reverse.slice(0, 3)
 

@@ -38,7 +38,7 @@ class Day9Test extends AnyFlatSpec with should.Matchers {
     val lowest = Day9.getLowestPoints(maze)
 
     val basinSizes = lowest.map(_ match { case ((x,y), _) => {
-      maze.getBasinSizeofPoint(x,y, Nil).toSet.size
+      maze.getBasinSizeofPoint(x,y, LazyList()).toSet.size
     } } ).toList.sorted.reverse.slice(0,3)
     basinSizes.product should be(1134)
   }
