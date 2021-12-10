@@ -43,4 +43,17 @@ class Day10Test extends AnyFlatSpec with should.Matchers {
   }
 
 
+  "Day 10 Part 2" should "get completions" in {
+    val completions = Day10.getCompletions("[({(<(())[]>[[{[]{<()<>>".toCharArray.toList)
+
+    completions.mkString should be("}}]])})]")
+
+    Day10.getValueOfCompletionString(completions) should be(288957)
+  }
+
+  "Day 10 Part 2" should "get score" in {
+    Day10.part2(TestData.testData.toList) should be(288957)
+  }
+
+
 }

@@ -23,26 +23,13 @@ object Day10 extends App {
     '>' -> 25137,
   )
 
-  //  class Line(val line: String){
-  //    def isCorrupted() = false
-  //    def isComplete() = {
-  //      val freqMap = line
-  //        .split("")
-  //        .groupMapReduce(identity)(_ => 1L)(_ + _)
-  //      freqMap
-  //        .filter((char, _) => bracketMap.keySet.contains(char)) // only opening
-  //        .forall((char, numOccurrence) => {
-  //          (for {
-  //            associatedBracket <- bracketMap.lift(char)
-  //            frequencyOfAssociatedBracket <- freqMap.lift(associatedBracket)
-  //            _ = println(s"${char}x${numOccurrence} is assoc with ${associatedBracket}x${frequencyOfAssociatedBracket}")
-  //          } yield numOccurrence == frequencyOfAssociatedBracket).getOrElse(false)
-  //        })
-  //    }
-  //
-  //
-  //
-  //  }
+  val completionValueMap = Map(
+    ')' -> 1,
+    ']' -> 2,
+    '}' -> 3,
+    '>' -> 4,
+  )
+
 
   def iterate(charsInLine: List[Char], stack: List[Char]): Program = charsInLine match {
     case currentChar :: tail =>
@@ -61,6 +48,18 @@ object Day10 extends App {
     case Nil => Valid
   }
 
+  def getCompletions(charsInLine: List[Char]): List[Char] = iterate(charsInLine, Nil) match {
+    case Valid => Nil
+    case Invalid(expected, actual) => Nil
+    case Incomplete(remaining) => remaining
+  }
+
+  def getValueOfCompletionString(completionList: List[Char]) = {
+    completionList.foldLeft(0L)((acc, char) => (acc * 5) + completionValueMap(char))
+  }
+
+  def median(list: List[Long]) = list.sortWith(_ < _).drop(list.length / 2).head
+
   def part1(lines: List[String]) = lines.map(l => {
     iterate(l.toCharArray.toList, Nil) match {
       case Valid => 0
@@ -69,5 +68,10 @@ object Day10 extends App {
     }
   }).sum
 
+  def part2(lines: List[String]) = median(lines.map(
+    l => getCompletions(l.toCharArray.toList)
+  ).map(getValueOfCompletionString(_)).filter(_ > 0))
+
   println(part1(Util.getFileLines(10)))
+    println(part2(Util.getFileLines(10)))
 }
