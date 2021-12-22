@@ -1,6 +1,6 @@
 package ch.bharanya
 
-import Day15.Coordinate
+import Day15.{Coordinate, CoordinateDistance}
 
 import org.scalatest.*
 import org.scalatest.flatspec.*
@@ -36,9 +36,22 @@ class Day15Test extends AnyFlatSpec with should.Matchers {
     map.lift(Coordinate(10,10)) should be(None)
   }
 
-  it should "get neighbors" in {
-    val result = Day15.part1(TestData.testData, new Coordinate(9,9))
-    result
+  it should "build initial priority queue" in {
+    val map = Day15.getMap(TestData.testData)
+    val startCoord = Coordinate(0,0)
+    val queue = Day15.getInitialPrioQueue(startCoord, map)
+    queue.dequeue() should be(CoordinateDistance(startCoord, 0))
+  }
+
+  it should "setQueueValuesForNeighbors" in {
+    val map = Day15.getMap(TestData.testData)
+    val startCoord = Coordinate(0,0)
+    val queue = Day15.getInitialPrioQueue(startCoord, map)
+    val mutatedQueue = Day15.setQueueValuesForNeighbors(startCoord, queue, map)
+    val first = mutatedQueue.dequeue()
+    println(first)
+    val firstNeighbor = mutatedQueue.dequeue()
+    println(firstNeighbor)
   }
 
 }

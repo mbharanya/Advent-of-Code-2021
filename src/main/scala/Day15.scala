@@ -1,9 +1,16 @@
 package ch.bharanya
 
 import scala.collection.immutable.Queue
+import scala.collection.mutable
 
 object Day15 extends App {
   type CoordMap = Map[Coordinate, Int]
+
+  case class CoordinateDistance(coordinate: Coordinate, var distance: Int) // ewwww mutability https://stackoverflow.com/questions/9103742/change-priority-of-items-in-a-priority-queue
+
+  def MyOrdering = new Ordering[CoordinateDistance] {
+    def compare(a : CoordinateDistance, b : CoordinateDistance) = a.distance.compare(b.distance)
+  }
 
   case class Coordinate(x: Int, y: Int) {
     def verticalAndHorizontalNeighbors = List(
@@ -26,60 +33,41 @@ object Day15 extends App {
   }
 
 
-  def findAllPaths(queue: Queue[CoordinateCounter], foundPath: List[CoordinateCounter], coordMap: CoordMap): List[CoordinateCounter] = {
-    if (!queue.isEmpty) {
-      val (currentElement, newQueue) = queue.dequeue
-      val newVisited = currentElement :: foundPath
+  def getInitialPrioQueue(start: Coordinate, map: CoordMap) = {
+    val priorityQueue = mutable.PriorityQueue[CoordinateDistance]()(MyOrdering.reverse)
 
-      if (currentElement.coordinate != Coordinate(0,0)) {
-
-        val newones = currentElement.coordinate.verticalAndHorizontalNeighbors
-          .map(neighbor => CoordinateCounter(neighbor, currentElement.counter + 1))
-          .filter(c => coordMap.lift(c.coordinate).isDefined)
-
-        val newCounters = newones.filter(c => {
-          !newVisited.map(_.coordinate).contains(c.coordinate)
-        })
-          .filter(c => {
-//            coordMap.lift(c.coordinate).isDefined
-            (for {
-              neighborValue <- coordMap.lift(c.coordinate)
-              currentElementValue <- coordMap.lift(currentElement.coordinate)
-            } yield neighborValue <= currentElementValue).getOrElse(false) //TODO: false?
-          })
-
-//        val newCounters = currentElement.coordinate.verticalAndHorizontalNeighbors
-//          .map(
-//            neighbor => CoordinateCounter(neighbor, currentElement.counter + 1)
-//          )
-//          //If the cell is a wall, remove it from the list
-//          .filter(c => {
-//            coordMap.lift(c.coordinate).isDefined
-////            (for {
-////              neighborValue <- coordMap.lift(c.coordinate)
-////              currentElementValue <- coordMap.lift(currentElement.coordinate)
-////            } yield neighborValue <= currentElementValue).getOrElse(false) //TODO: false?
-//          })
-//          // If there is an element in the main list with the same coordinate, remove it from the cells list
-//          .filter(c => {
-//            !newVisited.exists(_.coordinate == currentElement.coordinate)
-//          })
-        findAllPaths(newQueue.enqueueAll(newCounters), newVisited, coordMap)
-      }else {
-        foundPath
+    // set all except start value to infinite distance
+    val distanceMap = map.map((coordinate, value) => {
+      if (coordinate == start) {
+        priorityQueue.enqueue(CoordinateDistance(coordinate, 0))
+      } else {
+        priorityQueue.enqueue(CoordinateDistance(coordinate, Integer.MAX_VALUE))
       }
-    } else {
-      foundPath
-    }
+    })
+
+    priorityQueue
   }
+
+  def setQueueValuesForNeighbors(start: Coordinate, priorityQueue: mutable.PriorityQueue[CoordinateDistance], map: CoordMap): mutable.PriorityQueue[CoordinateDistance] = {
+    val neighbors = start.verticalAndHorizontalNeighbors
+    neighbors.foreach(neighborCoord => {
+      for {
+        coordValue <- map.lift(neighborCoord)
+      } yield priorityQueue.find(p => p.coordinate == neighborCoord) match {
+        case Some(coordDist: CoordinateDistance) => coordDist.distance = coordValue
+        case None => println("not found")
+      }
+    })
+    // clone to reorder
+    priorityQueue.clone()
+  }
+
 
   def part1(input: List[String], lastCoordinate: Coordinate) = {
     val map = getMap(input)
-    findAllPaths(
-      Queue.from(List(new CoordinateCounter(lastCoordinate, 0))),
-      Nil,
-      map
-    )
+
+
+
   }
 
 }
